@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <paymate>
+                <active>1</active>
+                <model>Marcwatts\Paymate\Model\Directpost</model>
+                <title>Paymate - Direct Post</title>
+                <!--<payment_action>order</payment_action>-->
+                <order_status>pending</order_status>
+                <testmode>1</testmode>
+                <threedsecure>0</threedsecure>
+                <cctypes>VI,MC</cctypes>
+                <allowspecific>0</allowspecific>
+            </paymate>
+        </payment>
+    </default>
+</config>

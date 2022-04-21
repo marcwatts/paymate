@@ -1,0 +1,51 @@
+<?php
+/**
+ */
+?>
+<?php $jsonHelper = $this->helper('\Magento\Framework\Json\Helper\Data');?>
+<?php $_info = $this->getInfo();?>
+<div><?php echo $block->escapeHtml($block->getMethod()->getTitle()) ?></div>
+
+<?php
+if ($_info->getAdditionalInformation('payment_additional_info')):
+    $paymentInfo = $jsonHelper->jsonDecode($_info->getAdditionalInformation('payment_additional_info'));
+    ?>
+<table>
+    <tbody>
+
+    <?php if (isset($paymentInfo['pan'])):?>
+        <tr>
+            <td>Credit Card Number: </td>
+            <td>
+                <?php echo $paymentInfo['pan'];?>
+            </td>
+        </tr>
+    <?php endif;?>
+    <?php if (isset($paymentInfo['txnid'])):?>
+        <tr>
+            <td>Transaction ID: </td>
+            <td>
+                <?php echo $paymentInfo['txnid'];?>
+            </td>
+        </tr>
+    <?php endif;?>
+    <?php if (isset($paymentInfo['restext'])):?>
+        <tr>
+            <td>Response Text: </td>
+            <td>
+                <?php echo $paymentInfo['restext'];?>
+            </td>
+        </tr>
+    <?php endif;?>
+
+    <?php if (isset($paymentInfo['afrestext'])):?>
+        <tr>
+            <td>Associated Risk Management Result: </td>
+            <td>
+                <?php echo $paymentInfo['afrestext'];?>
+            </td>
+        </tr>
+    <?php endif;?>
+    </tbody>
+</table>
+<?php endif;?>
