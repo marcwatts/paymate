@@ -1,0 +1,21 @@
+{
+	"authors": [
+		{
+			"homepage": "https://marcwatts.com.au",
+			"name": "Marc Watts"
+		}
+	],
+	"autoload": {
+		"files": [
+			"registration.php"
+		],
+		"psr-4": {
+			"Marcwatts\\Index\\": ""
+		}
+	},
+	"description": "Paymate Magento Extension",
+	"license": "proprietary",
+	"name": "marcwatts/paymate",
+	"type": "magento2-module",
+	"version": "1.0.0"
+}
