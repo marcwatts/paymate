@@ -16,6 +16,5 @@
 	"description": "Paymate Magento Extension",
 	"license": "proprietary",
 	"name": "marcwatts/paymate",
-	"type": "magento2-module",
-	"version": "1.0.0"
+	"type": "magento2-module"
 }
