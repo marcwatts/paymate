@@ -19,6 +19,8 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
         $urlBuilder = $this->_objectManager->get('Magento\Framework\UrlInterface');
 
         $debugemail = $this->_objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/paymate/debugemail');
+        $loggingActive = $this->_objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/paymate/logging_active');
+        $testMode = $this->_objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/paymate/testmode');
         $defaultEmail = $this->_objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('trans_email/ident_support/email');
 
         $storeName = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getName();
@@ -36,6 +38,9 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
         }
 
       
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/paymate.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
 
 
        $url = "https://secure.cardaccess.com.au/ecom/casconnect_conv/store_form_update/store_A.py";
@@ -45,35 +50,49 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
        curl_setopt($ch, CURLOPT_URL,$url);
        curl_setopt($ch, CURLOPT_POST, 1);
 
+       $requestData = array(
+        'cas.merid' => $merchantId,
+        'cas.merchant_name' => $storeName,
+        'cas.approved_email' => $debugemail,
+        'CAS.BUYER.FIRSTNAME' => $order->getCustomerFirstname(),
+        'CAS.BUYER.LASTNAME' => $order->getCustomerLastname(),
+        'CAS.BUYER.EMAIL' => $order->getCustomerEmail(),
+        'CAS.BUYER.PHONE' => $order->getBillingAddress()->getTelephone(),
+        'CAS.BUYER.COUNTRY' => $order->getBillingAddress()->getCountryId(),
+        'CAS.BUYER.ADDRESS1' => implode(' ', $order->getBillingAddress()->getStreet()),
+        'CAS.BUYER.ADDRESS2' => ' ',
+        'CAS.BUYER.CITYSUB' => $order->getBillingAddress()->getCity(),
+        'CAS.BUYER.STATEPROV' => $order->getBillingAddress()->getRegion(),
+        'CAS.BUYER.POSTCODE' => $order->getBillingAddress()->getPostCode(),
+        'cas.amt' => number_format((float) $order->getGrandTotal(), 2, '.', ''),
+        'cas.return_link' => $urlBuilder->getUrl('paymate/checkout/returned',  ['_secure' => true]),
+        'cas.cancel_url' => $urlBuilder->getUrl('paymate/checkout/canceled',  ['_secure' => true]),
+        'cas.approved_url' => $urlBuilder->getUrl('paymate/checkout/approved',  ['_secure' => true]),
+        'cas.declined_url' => $urlBuilder->getUrl('paymate/checkout/declined',  ['_secure' => true]),
+        'cas.reference' => $order->getIncrementId(),
+        'cas.merchant_password' => $encryptor->decrypt($password)
+       );
+
+       if($testMode){
+            $requestData['cas.istest'] = 1;
+       }
         curl_setopt($ch, CURLOPT_POSTFIELDS,  http_build_query(
-            array(
-            'cas.merid' => $merchantId,
-            'cas.merchant_name' => $storeName,
-            'cas.approved_email' => $debugemail,
-            'CAS.BUYER.FIRSTNAME' => $order->getCustomerFirstname(),
-            'CAS.BUYER.LASTNAME' => $order->getCustomerLastname(),
-            'CAS.BUYER.EMAIL' => $order->getCustomerEmail(),
-            'CAS.BUYER.PHONE' => $order->getBillingAddress()->getTelephone(),
-            'CAS.BUYER.COUNTRY' => $order->getBillingAddress()->getCountryId(),
-            'CAS.BUYER.ADDRESS1' => implode(' ', $order->getBillingAddress()->getStreet()),
-            'CAS.BUYER.ADDRESS2' => ' ',
-            'CAS.BUYER.CITYSUB' => $order->getBillingAddress()->getCity(),
-            'CAS.BUYER.STATEPROV' => $order->getBillingAddress()->getRegion(),
-            'CAS.BUYER.POSTCODE' => $order->getBillingAddress()->getPostCode(),
-            'cas.amt' => number_format((float) $order->getGrandTotal(), 2, '.', ''),
-            'cas.return_link' => $urlBuilder->getUrl('paymate/checkout/returned',  ['_secure' => true]),
-            'cas.cancel_url' => $urlBuilder->getUrl('paymate/checkout/canceled',  ['_secure' => true]),
-            'cas.approved_url' => $urlBuilder->getUrl('paymate/checkout/approved',  ['_secure' => true]),
-            'cas.declined_url' => $urlBuilder->getUrl('paymate/checkout/declined',  ['_secure' => true]),
-            'cas.reference' => $order->getIncrementId(),
-            'cas.merchant_password' => $encryptor->decrypt($password)
-            ))
+           $requestData )
         );
        
+        if ($loggingActive){
+            $logger->info("Request : " . print_r($requestData,true));
+        }
+        
+
 
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
        
        $server_output = curl_exec($ch);
+
+       if ($loggingActive){
+        $logger->info("Return : " . print_r($server_output,true));
+    }
 
        $params = explode("\n", $server_output);
        curl_close ($ch);
