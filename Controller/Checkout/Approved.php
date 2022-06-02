@@ -53,11 +53,21 @@ class Approved extends  \Magento\Framework\App\Action\Action  implements CsrfAwa
     {
 
 
-      
+        $loggingActive = $this->_objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/paymate/logging_active');
        
        if (!isset($_REQUEST)){
         echo "Incorrect Response 1";
        }
+
+
+        if (isset($_REQUEST)){
+            if ($loggingActive){
+                $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/paymate.log');
+                $logger = new \Zend_Log();
+                $logger->addWriter($writer);
+                $logger->info("Cancelled Request : " . print_r($this->getRequest(), true));
+            }
+        }
 
 
        if (isset($_REQUEST) && isset($_REQUEST['cas_reference']) && isset( $_REQUEST['cas_amt'])){

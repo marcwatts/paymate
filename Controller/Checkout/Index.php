@@ -25,7 +25,7 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
 
         $storeName = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getName();
         
-        $debugemail = (strlen($debugemail)>1) ? $debugemail : $defaultEmail ;
+        $debugemail = ( isset($debugemail) && strlen($debugemail)>1) ? $debugemail : $defaultEmail ;
 
         if (!$active){
             return;
@@ -38,9 +38,7 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
         }
 
       
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/paymate.log');
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
+        
 
 
        $url = "https://secure.cardaccess.com.au/ecom/casconnect_conv/store_form_update/store_A.py";
@@ -82,6 +80,9 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
         );
        
         if ($loggingActive){
+            $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/paymate.log');
+            $logger = new \Zend_Log();
+            $logger->addWriter($writer);
             $logger->info("Request : " . print_r($requestData,true));
         }
         
