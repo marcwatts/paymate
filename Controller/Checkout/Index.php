@@ -70,12 +70,13 @@ class Index extends  \Marcwatts\Paymate\Controller\AbstractCheckoutAction
         'cas.approved_url' => $urlBuilder->getUrl('paymate/checkout/approved',  ['_secure' => true]),
         'cas.declined_url' => $urlBuilder->getUrl('paymate/checkout/declined',  ['_secure' => true]),
         'cas.reference' => $order->getIncrementId(),
-        'cas.merchant_password' => $encryptor->decrypt($password)
+        'cas.merchant_password' => $encryptor->decrypt($password),
+        'cas.istest' => 0
        );
 
-       if($testMode){
-            $requestData['cas.istest'] = 1;
-       }
+      // if($testMode){
+       //     $requestData['cas.istest'] = 1;
+      // }
         curl_setopt($ch, CURLOPT_POSTFIELDS,  http_build_query(
            $requestData )
         );
