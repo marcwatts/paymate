@@ -10,7 +10,7 @@
 			"registration.php"
 		],
 		"psr-4": {
-			"Marcwatts\\Index\\": ""
+			"Marcwatts\\Paymate\\": ""
 		}
 	},
 	"description": "Paymate Magento Extension",
