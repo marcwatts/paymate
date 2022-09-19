@@ -43,17 +43,7 @@ class Canceled extends \Magento\Framework\App\Action\Action implements CsrfAware
     public function execute()
     {
         
-        $loggingActive = $this->_objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/paymate/logging_active');
-        
 
-        if ($loggingActive){
-            $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/paymate.log');
-            $logger = new \Zend_Log();
-            $logger->addWriter($writer);
-            $logger->info("Cancelled Request : " . print_r($this->getRequest(), true));
-        }
-      // $this->getRequest()->setPostValue('cas_user_cancelled', 1);
-       // $this->getRequest()->setPostValue('cas_reference', '000000040');
 
        $casCancelled = $this->getRequest()->getParam('cas_user_cancelled');
        $casReference = $this->getRequest()->getParam('cas_reference');
