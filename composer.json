@@ -5,6 +5,7 @@
 			"name": "Marc Watts"
 		}
 	],
+	"version": "1.0.0",
 	"autoload": {
 		"files": [
 			"registration.php"
