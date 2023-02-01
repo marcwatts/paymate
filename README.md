@@ -7,7 +7,7 @@ This plugin allows you to accept Paymate payments through your website.
 ## Installation
 
 <ol>
-	<li> Download the Paymate plugin - Available as a .zip or tar.gz file from the GitHub directory. </li>
+	<li> Download all Paymate plugin files from our github repo  (Available as a .zip or tar.gz download as well). </li>
 	<li> Unzip the file </li>
 	<li> Create directory Marcwatts/Paymate in: <br/> <em>[MAGENTO_INSTAL_DIR]/app/code/</em></li>
 	<li> Copy the extracted files to this folder folder </li>
